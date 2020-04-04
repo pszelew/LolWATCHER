@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>img/profile.png</file>
+        <file>img/lucian.gif</file>
+        <file>img/QtIcon.png</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>sounds/theme.mp3</file>
+    </qresource>
+</RCC>
