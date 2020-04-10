@@ -165,6 +165,22 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QLabel" name="label_loading">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>250</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Sprawdzanie połączenia...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+   </widget>
    <zorder>label_background</zorder>
    <zorder>label_settings</zorder>
    <zorder>label_author</zorder>
@@ -175,6 +191,7 @@
    <zorder>label_version</zorder>
    <zorder>button_connect</zorder>
    <zorder>label_logo_2</zorder>
+   <zorder>label_loading</zorder>
   </widget>
  </widget>
  <resources/>

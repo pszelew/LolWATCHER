@@ -13,7 +13,95 @@
   <property name="windowTitle">
    <string>Ustawienia</string>
   </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_ip">
+     <property name="text">
+      <string>ip</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="line_ip"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label__lang">
+     <property name="text">
+      <string>język</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="line_lang"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_port">
+     <property name="text">
+      <string>port</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="line_port"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_freq">
+     <property name="text">
+      <string>cz. odśw.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="line_freq"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_width">
+     <property name="text">
+      <string>szerokość okna</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="line_width"/>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_height">
+     <property name="text">
+      <string>wysokość okna</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QLineEdit" name="line_height"/>
+   </item>
+   <item row="8" column="1">
+    <widget class="QCheckBox" name="checkBox_max">
+     <property name="text">
+      <string>maksymalizuj</string>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QPushButton" name="button_apply">
+     <property name="text">
+      <string>Zatwierdź</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <tabstops>
+  <tabstop>line_ip</tabstop>
+  <tabstop>line_port</tabstop>
+  <tabstop>line_lang</tabstop>
+  <tabstop>line_freq</tabstop>
+  <tabstop>line_width</tabstop>
+  <tabstop>line_height</tabstop>
+  <tabstop>checkBox_max</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

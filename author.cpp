@@ -60,6 +60,6 @@ void Author::on_splitter_splitterMoved(int pos, int index)
 {
     int w = ui->label_pict->width();
     int h = ui->label_pict->height();
-    ui->label_pict->resize(w,h);
+    //ui->label_pict->resize(w,h);
     ui->label_pict->setPixmap(pix->scaled(w,h,Qt::KeepAspectRatio));
 }

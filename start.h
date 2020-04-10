@@ -8,6 +8,8 @@
 #include <QMediaPlaylist>
 #include <QMovie>
 #include <QSize>
+#include <QNetworkAccessManager>
+#include <QMessageBox>
 #include "ustawienia.h"
 #include "author.h"
 #include "menu.h"
@@ -25,6 +27,8 @@ class Start : public QMainWindow
 public:
     Start(QWidget *parent = nullptr);
     ~Start();
+protected slots:
+    void on_results(QNetworkReply *reply);
 protected:
     virtual void resizeEvent(QResizeEvent *wZdarz);
 private slots:
@@ -34,15 +38,20 @@ private slots:
 
     void on_button_connect_clicked();
 
+    void update_window(int result);
 private:
+    QString *settings;
     Ui::Start *ui;
+    QNetworkAccessManager *networkManager;
     QSharedPointer<QPixmap> pix;
-    QSharedPointer<Ustawienia> ust;
+    Ustawienia* ust;
     QSharedPointer<Author> auth;
     QSharedPointer<Menu> menu;
     QMediaPlayer* player;
     QMediaPlaylist* playlist;
     QMovie* gif;
+    bool to_initialize;
+
 
 };
 #endif // START_H

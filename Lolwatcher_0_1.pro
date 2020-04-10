@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 QT += multimedia
 QT += multimediawidgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -18,19 +18,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     author.cpp \
+    enemy.cpp \
+    enemy_window.cpp \
+    hero_window.cpp \
     main.cpp \
     menu.cpp \
     start.cpp \
-    ustawienia.cpp
+    ustawienia.cpp \
+    your_hero.cpp
 
 HEADERS += \
     author.h \
+    enemy.h \
+    enemy_window.h \
+    hero_window.h \
     menu.h \
     start.h \
-    ustawienia.h
+    ustawienia.h \
+    your_hero.h
 
 FORMS += \
     author.ui \
+    enemy_window.ui \
+    hero_window.ui \
     menu.ui \
     start.ui \
     ustawienia.ui
@@ -42,3 +52,19 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     background.qrc
+
+unix: CONFIG += link_pkgconfig
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../vcpkg/installed/x64-linux/lib/release/ -ljsoncpp
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../vcpkg/installed/x64-linux/lib/debug/ -ljsoncpp
+else:unix: LIBS += -L$$PWD/../../vcpkg/installed/x64-linux/lib/ -ljsoncpp
+
+INCLUDEPATH += $$PWD/../../vcpkg/installed/x64-linux/include
+DEPENDPATH += $$PWD/../../vcpkg/installed/x64-linux/include
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../vcpkg/installed/x64-linux/lib/release/libjsoncpp.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../vcpkg/installed/x64-linux/lib/debug/libjsoncpp.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../vcpkg/installed/x64-linux/lib/release/jsoncpp.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../vcpkg/installed/x64-linux/lib/debug/jsoncpp.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../../vcpkg/installed/x64-linux/lib/libjsoncpp.a
