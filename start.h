@@ -40,6 +40,7 @@ private slots:
 
     void update_window(int result);
 private:
+    void update_content();
     QString *settings;
     Ui::Start *ui;
     QNetworkAccessManager *networkManager;

@@ -221,7 +221,6 @@ void Menu::resizeEvent(QResizeEvent *wZdarz)
             ui->label_enemy_3_pic->setPixmap(pix_enemies[2].scaled(ui->label_enemy_1_pic->width(), ui->label_enemy_1_pic->height(),Qt::KeepAspectRatio));
             ui->label_enemy_4_pic->setPixmap(pix_enemies[3].scaled(ui->label_enemy_1_pic->width(), ui->label_enemy_1_pic->height(),Qt::KeepAspectRatio));
             ui->label_enemy_5_pic->setPixmap(pix_enemies[4].scaled(ui->label_enemy_1_pic->width(), ui->label_enemy_1_pic->height(),Qt::KeepAspectRatio));
-
         }
 
 
@@ -476,10 +475,6 @@ void Menu::on_splitter_splitterMoved(int pos, int index)
     }
     else
         splitter_1_pos=pos;
-
-
-
-
 }
 
 void Menu::on_button_enemies_clicked()

@@ -56,6 +56,5 @@ void Ustawienia::on_button_apply_clicked()
     out << "maximized = "<< check << "\n";
 
     data_conf.close();
-    this->close();
-
+    this->finished(42);
 }
