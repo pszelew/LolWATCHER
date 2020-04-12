@@ -23,7 +23,7 @@ Start::Start(QWidget *parent)
     }
     QTextStream in(&data_conf);
 
-    settings = new QString[7];
+    settings = new QString[8];
     settings[0] = in.readLine().remove("ip = ");
     settings[1] = in.readLine().remove("port = ");
     settings[2] = in.readLine().remove("language = ");
@@ -31,9 +31,10 @@ Start::Start(QWidget *parent)
     settings[4] = in.readLine().remove("window_width = ");
     settings[5] = in.readLine().remove("window_height = ");
     settings[6] = in.readLine().remove("maximized = ");
+    settings[7] = in.readLine().remove("api_key = ");
 
+    this->resize(settings[4].toInt(),settings[5].toInt());
     this->setMinimumSize(300, 200);
-
     //menedzer sieci
     networkManager = new QNetworkAccessManager();
 
@@ -110,12 +111,22 @@ Start::~Start()
 
 void Start::resizeEvent(QResizeEvent *wZdarz)
 {
-    if(to_initialize)
+    qDebug()<< wZdarz->size();
+    qDebug()<< wZdarz->oldSize();
+    if(to_initialize&&settings[6]=="true")
     {
-        update_window(42);
-        to_initialize =false;
+        this->showMaximized();
+        to_initialize = false;
+    }
+    else if(to_initialize)
+    {
+       this->resize(settings[4].toInt(),settings[5].toInt());
+       this->showNormal();
+       to_initialize = false;
     }
     update_content();
+
+    qDebug()<< "resize";
 }
 
 
@@ -170,47 +181,51 @@ void Start::on_results(QNetworkReply *reply)
 //zaktualizuj glowne okno programu
 void Start::update_window(int result)
 {
+    qDebug() <<result;
     if(result == 42)
     {
-    //update data
-    QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
+        //update data
+        QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
 
-    if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << "Nie udalo sie utworzyc pliku z ustawieniami: data.conf";
-        return;
-    }
+        if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            qDebug() << "Nie udalo sie utworzyc pliku z ustawieniami: data.conf";
+            return;
+        }
 
-    QTextStream in(&data_conf);
+        QTextStream in(&data_conf);
 
-    settings = new QString[7];
-    settings[0] = in.readLine().remove("ip = ");
-    settings[1] = in.readLine().remove("port = ");
-    settings[2] = in.readLine().remove("language = ");
-    settings[3] = in.readLine().remove("update_freq = ");
-    settings[4] = in.readLine().remove("window_width = ");
-    settings[5] = in.readLine().remove("window_height = ");
-    settings[6] = in.readLine().remove("maximized = ");
+        settings[0] = in.readLine().remove("ip = ");
+        settings[1] = in.readLine().remove("port = ");
+        settings[2] = in.readLine().remove("language = ");
+        settings[3] = in.readLine().remove("update_freq = ");
+        settings[4] = in.readLine().remove("window_width = ");
+        settings[5] = in.readLine().remove("window_height = ");
+        settings[6] = in.readLine().remove("maximized = ");
+        settings[7] = in.readLine().remove("api_key = ");
 
-    data_conf.close();
-    //zaktualizuj rozmiar okna
-    if(settings[6]=="true")
-    {
-        this->showMaximized();
+        data_conf.close();
+        //zaktualizuj rozmiar okna
+        if(settings[6]=="true")
+        {
+            qDebug() << "tutaj";
+            this->showMaximized();
+        }
+        else if(settings[6]=="false")
+        {
+            this->showNormal();
+            this->resize(settings[4].toInt(), settings[5].toInt());
+            update_content();
+        }
     }
-    else if(settings[6]=="false")
-    {
-        this->showNormal();
-        this->resize(settings[4].toInt(), settings[5].toInt());
-    }
-    }
+    to_initialize = false;
 }
 //zaktualizuj wszystkie elementy okna
 void Start::update_content()
 {
     int x = this->width();
     int y = this->height();
-
+    qDebug()<< x<<y;
     QFont font = ui->label_logo->font();
     gif->setScaledSize(QSize(x,y));
     //skalowanie tla
@@ -326,6 +341,4 @@ void Start::update_content()
 
         ui->label_settings->move(0.83*x,0.9*y);
         ui->label_settings->resize(0.12*x,0.05*y);
-
-
 }

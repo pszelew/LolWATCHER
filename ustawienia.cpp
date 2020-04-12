@@ -16,6 +16,7 @@ Ustawienia::Ustawienia(QWidget *parent, QString settings[]) :
         ui->checkBox_max->setChecked(true);
     else
         ui->checkBox_max->setChecked(false);
+    ui->line_api->setText(settings[7]);
 }
 
 Ustawienia::~Ustawienia()
@@ -31,6 +32,7 @@ void Ustawienia::on_button_apply_clicked()
     QString freq = ui->line_freq->text();
     QString width = ui->line_width->text();
     QString height = ui->line_height->text();
+    QString api = ui->line_api->text();
     QString check;
     if(ui->checkBox_max->isChecked())
         check = "true";
@@ -54,6 +56,7 @@ void Ustawienia::on_button_apply_clicked()
     out << "window_width = " << width << "\n";
     out << "window_height = " << height << "\n";
     out << "maximized = "<< check << "\n";
+    out << "api_key = " <<api<<"\n";
 
     data_conf.close();
     this->finished(42);

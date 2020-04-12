@@ -20,9 +20,12 @@
 #include <your_hero.h>
 #include <hero_window.h>
 #include <enemy_window.h>
+#include <events_window.h>
+#include <tips_window.h>
 #include <enemy.h>
 #include <climits>
 #include <QResizeEvent>
+#include <QStyle>
 
 namespace Ui {
 class Menu;
@@ -42,19 +45,27 @@ protected:
 protected slots:
      void update_json();
      void on_results(QNetworkReply *reply);
+     void on_results_api(QNetworkReply *reply);
 private slots:
      void on_button_your_hero_clicked();
      void on_splitter_splitterMoved(int pos, int index);
      void on_button_enemies_clicked();
 
+     void on_button_events_clicked();
+
+     void on_button_tips_clicked();
+
 private:
     Ui::Menu *ui;
     QSharedPointer<Hero_window> her;
     QSharedPointer<Enemy_window> enem;
+    QSharedPointer<Events_window> eve;
+    QSharedPointer<Tips_window> tip;
     QSharedPointer<QPixmap> pix;
     QSharedPointer<QPixmap> pix_background;
     QPixmap* pix_enemies;
     QTimer *timer;
+    QNetworkAccessManager *networkManager_api;
     QNetworkAccessManager *networkManager;
     QSharedPointer<Your_hero> your_hero;
     Enemy* enemies;
@@ -65,6 +76,7 @@ private:
     QString url;
     QString port;
     QString language;
+    QString api_key;
     int update_freq;
     int window_width;
     int window_height;

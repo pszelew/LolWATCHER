@@ -20,10 +20,12 @@ SOURCES += \
     author.cpp \
     enemy.cpp \
     enemy_window.cpp \
+    events_window.cpp \
     hero_window.cpp \
     main.cpp \
     menu.cpp \
     start.cpp \
+    tips_window.cpp \
     ustawienia.cpp \
     your_hero.cpp
 
@@ -31,18 +33,22 @@ HEADERS += \
     author.h \
     enemy.h \
     enemy_window.h \
+    events_window.h \
     hero_window.h \
     menu.h \
     start.h \
+    tips_window.h \
     ustawienia.h \
     your_hero.h
 
 FORMS += \
     author.ui \
     enemy_window.ui \
+    events_window.ui \
     hero_window.ui \
     menu.ui \
     start.ui \
+    tips_window.ui \
     ustawienia.ui
 
 # Default rules for deployment.

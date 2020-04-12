@@ -28,6 +28,14 @@ Author::Author(QWidget *parent) :
 
     ui->label_pict->setPixmap(pix->scaled(w,h));
     ui->label_pict->resize(w,h);
+
+    QString frame("QLabel {""border-style: solid;"
+                   "border-width: 1px;"
+                   "border-color: black; "
+                   "}");
+
+    //ui->label_pict->setStyleSheet(frame);
+
 }
 
 Author::~Author()
@@ -44,8 +52,6 @@ void Author::resizeEvent(QResizeEvent *wZdarz)
     int h = ui->label_pict->height();
     //skalowanie zdjecia
     ui->label_pict->setPixmap(pix->scaled(w,h,Qt::KeepAspectRatio));
-
-
 
     //skalowanie ikony qt
     ui->label_qt->resize(0.2*x,0.1*y);

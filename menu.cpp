@@ -35,7 +35,7 @@ Menu::Menu(QWidget *parent) :
         maximized = true;
     else
         maximized = false;
-
+    api_key = in.readLine().remove("api_key = ");
     int x = this->width();
     int y = this->height();
 
@@ -44,6 +44,7 @@ Menu::Menu(QWidget *parent) :
     //inicjalizacja tablicy przeciwnikow
     enemies = new Enemy[5];
     //ustawienia sieci
+    networkManager_api = new QNetworkAccessManager();
     networkManager = new QNetworkAccessManager();
 
     //polaczenie timera ze slotem pobierajacym dane z sieci
@@ -51,6 +52,7 @@ Menu::Menu(QWidget *parent) :
      connect(timer, SIGNAL(timeout()), this, SLOT(update_json()));
      timer->start(update_freq);
      connect(networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(on_results(QNetworkReply *)));
+     connect(networkManager_api, SIGNAL(finished(QNetworkReply *)), this, SLOT(on_results_api(QNetworkReply *)));
 
 
      //zaktualizuj dane w aplikacji plik
@@ -63,50 +65,55 @@ Menu::Menu(QWidget *parent) :
 
 
     //ustawienie outline'u
-    ui->label_enemies->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "background-color: rgba(0,0,0,70%);"
-     "}");
-    ui->label_your_hero->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "background-color: rgba(0,0,0,70%);"
-     "}");
-    ui->label_tips->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "background-color: rgba(0,0,0,70%);"
-     "}");
-    ui->label_events->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "background-color: rgba(0,0,0,70%);"
-     "}");
-    ui->label_your_hero_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
-    ui->label_enemy_1_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
-    ui->label_enemy_2_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
-    ui->label_enemy_3_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
-    ui->label_enemy_4_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
-    ui->label_enemy_5_pic->setStyleSheet("QLabel {""border-style: solid;"
-     "border-width: 1px;"
-     "border-color: black; "
-     "}");
+    QString table_1("QLabel {""border-style: solid;"
+                   "border-width: 1px;"
+                   "border-color: black; "
+                   "background-color: rgba(0,0,128,70%);"
+                   "}");
+    QString table_2("QLabel {""border-style: solid;"
+                   "border-width: 1px;"
+                   "border-color: black; "
+                   "background-color: rgba(128,0,0,70%);"
+                   "}");
+    QString frame_back("QLabel {""border-style: solid;"
+                       "border-width: 1px;"
+                       "border-color: black; "
+                       "background-color: rgba(0,0,0,70%);"
+                       "}");
+    QString frame("QLabel {""border-style: solid;"
+                   "border-width: 1px;"
+                   "border-color: black; "
+                   "}");
+
+    ui->label_enemies->setStyleSheet(frame_back);
+    ui->label_your_hero->setStyleSheet(frame_back);
+    ui->label_tips->setStyleSheet(frame_back);
+    ui->label_events->setStyleSheet(frame_back);
+    ui->label_your_hero_pic->setStyleSheet(frame);
+    ui->label_tip_current->setStyleSheet(frame_back);
+
+    ui->label_towers_1->setStyleSheet(table_1);
+    ui->label_towers_1_ans->setStyleSheet(table_1);
+    ui->label_dragons_1->setStyleSheet(table_1);
+    ui->label_dragons_1_ans->setStyleSheet(table_1);
+    ui->label_barons_1->setStyleSheet(table_1);
+    ui->label_barons_1_ans->setStyleSheet(table_1);
+
+    ui->label_towers_2->setStyleSheet(table_2);
+    ui->label_towers_2_ans->setStyleSheet(table_2);
+    ui->label_dragons_2->setStyleSheet(table_2);
+    ui->label_dragons_2_ans->setStyleSheet(table_2);
+    ui->label_barons_2->setStyleSheet(table_2);
+    ui->label_barons_2_ans->setStyleSheet(table_2);
+
+    ui->label_enemy_1_pic->setStyleSheet(frame);
+    ui->label_enemy_2_pic->setStyleSheet(frame);
+    ui->label_enemy_3_pic->setStyleSheet(frame);
+    ui->label_enemy_4_pic->setStyleSheet(frame);
+    ui->label_enemy_5_pic->setStyleSheet(frame);
+
+    ui->label_last->setStyleSheet(frame_back);
+    ui->label_last_event->setStyleSheet(frame_back);
 
     QGraphicsDropShadowEffect *effect_e_1 = new QGraphicsDropShadowEffect(this);
     QGraphicsDropShadowEffect *effect_e_2 = new QGraphicsDropShadowEffect(this);
@@ -222,8 +229,6 @@ void Menu::resizeEvent(QResizeEvent *wZdarz)
             ui->label_enemy_4_pic->setPixmap(pix_enemies[3].scaled(ui->label_enemy_1_pic->width(), ui->label_enemy_1_pic->height(),Qt::KeepAspectRatio));
             ui->label_enemy_5_pic->setPixmap(pix_enemies[4].scaled(ui->label_enemy_1_pic->width(), ui->label_enemy_1_pic->height(),Qt::KeepAspectRatio));
         }
-
-
     }
 }
 
@@ -231,6 +236,7 @@ void Menu::resizeEvent(QResizeEvent *wZdarz)
 void Menu::update_json()
 {
      networkManager->get(QNetworkRequest(QUrl("http://"+url+":"+port+"/liveclientdata/allgamedata")));
+     networkManager_api->get(QNetworkRequest(QUrl("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/pepit9889?api_key="+api_key)));
 }
 
 void Menu::on_results(QNetworkReply *reply)
@@ -399,6 +405,22 @@ void Menu::on_results(QNetworkReply *reply)
         qDebug() << "Nie nawiazano polaczenia z serwerem\n";
 }
 
+void Menu::on_results_api(QNetworkReply *reply)
+{
+    if(!reply->error())
+    {
+        qDebug() << "otrzymano informacje z serwera";
+        QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+        QJsonObject root = document.object();
+        qDebug()<< root;
+    }
+    else
+    {
+        qDebug()<< "blad odczytu z API";
+    }
+}
+
+
 void Menu::on_button_your_hero_clicked()
 {
     her = QSharedPointer<Hero_window>(new Hero_window(this));
@@ -482,4 +504,18 @@ void Menu::on_button_enemies_clicked()
     enem = QSharedPointer<Enemy_window>(new Enemy_window(this));
     enem->setModal(true);
     enem->show();
+}
+
+void Menu::on_button_events_clicked()
+{
+    eve = QSharedPointer<Events_window>(new Events_window(this));
+    eve->setModal(true);
+    eve->show();
+}
+
+void Menu::on_button_tips_clicked()
+{
+    tip = QSharedPointer<Tips_window>(new Tips_window(this));
+    tip->setModal(true);
+    tip->show();
 }
