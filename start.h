@@ -39,6 +39,8 @@ private slots:
     void on_button_connect_clicked();
 
     void update_window(int result);
+signals:
+    void send_settings(QString *settings);
 private:
     void update_content();
     QString *settings;
@@ -47,7 +49,7 @@ private:
     QSharedPointer<QPixmap> pix;
     Ustawienia* ust;
     QSharedPointer<Author> auth;
-    QSharedPointer<Menu> menu;
+    Menu* menu;
     QMediaPlayer* player;
     QMediaPlaylist* playlist;
     QMovie* gif;

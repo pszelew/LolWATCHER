@@ -11,11 +11,8 @@ Start::Start(QWidget *parent)
 {
     ui->setupUi(this);
     //napis "wersja"
-    QString ver = "ver 0.2, 10/04/20";
-    ui->label_loading->show();
-
+    QString ver = "ver 0.3, 06/05/2020";
     QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
-
     if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qDebug() << "Nie udalo sie utworzyc pliku z ustawieniami: data.conf";
@@ -43,9 +40,7 @@ Start::Start(QWidget *parent)
     ui->label_version->setText(ver);
     ui->label_version->setAlignment(Qt::AlignCenter);
     ui->label_version->setStyleSheet("QLabel {color : white; }");
-    //ukrycie loadingu
     ui->label_loading->hide();
-
     //ustawienie tla programu
     gif = new QMovie(":/images/img/lucian.gif");
     ui->label_background->move(0,0);
@@ -97,7 +92,7 @@ Start::Start(QWidget *parent)
     player->setPlaylist(playlist);
 
 
-    player->setVolume(50);
+    player->setVolume(10);
     player->play();
 
     //ustawienie logo
@@ -111,8 +106,6 @@ Start::~Start()
 
 void Start::resizeEvent(QResizeEvent *wZdarz)
 {
-    qDebug()<< wZdarz->size();
-    qDebug()<< wZdarz->oldSize();
     if(to_initialize&&settings[6]=="true")
     {
         this->showMaximized();
@@ -125,8 +118,6 @@ void Start::resizeEvent(QResizeEvent *wZdarz)
        to_initialize = false;
     }
     update_content();
-
-    qDebug()<< "resize";
 }
 
 
@@ -148,6 +139,7 @@ void Start::on_button_author_clicked()
 
 void Start::on_button_connect_clicked()
 {
+    ui->label_loading->show();
     networkManager->get(QNetworkRequest(QUrl("http://"+settings[0]+":"+settings[1]+"/liveclientdata/allgamedata")));
 }
 
@@ -156,17 +148,19 @@ void Start::on_results(QNetworkReply *reply)
     if(!reply->error())
     {
         player->stop();
-        menu = QSharedPointer<Menu>(new Menu);
+        menu = new Menu;
+        connect(this, SIGNAL(send_settings(QString*)), menu, SLOT(get_settings(QString*)));
         menu->show();
+        send_settings(settings);
         this->close();
     }
     else
     {
        // dodane w celu debugowania
-        player->stop();
-        menu = QSharedPointer<Menu>(new Menu);
-        menu->show();
-        this->close();
+        //player->stop();
+        //menu = QSharedPointer<Menu>(new Menu);
+        //menu->show();
+        //this->close();
         // dodane w celu debugowania
 
         QMessageBox::critical(this, tr("Błąd połączenia sieciowego"),
@@ -181,8 +175,7 @@ void Start::on_results(QNetworkReply *reply)
 //zaktualizuj glowne okno programu
 void Start::update_window(int result)
 {
-    qDebug() <<result;
-    if(result == 42)
+    if(result == 42) //tylko gdy przycisnieto przycisk zatwierdz
     {
         //update data
         QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
@@ -208,7 +201,6 @@ void Start::update_window(int result)
         //zaktualizuj rozmiar okna
         if(settings[6]=="true")
         {
-            qDebug() << "tutaj";
             this->showMaximized();
         }
         else if(settings[6]=="false")
@@ -225,7 +217,7 @@ void Start::update_content()
 {
     int x = this->width();
     int y = this->height();
-    qDebug()<< x<<y;
+
     QFont font = ui->label_logo->font();
     gif->setScaledSize(QSize(x,y));
     //skalowanie tla

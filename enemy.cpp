@@ -1,6 +1,6 @@
 #include "enemy.h"
 
-Enemy::Enemy()
+Enemy::Enemy(): masteryLvl(0), masteryPts(0)
 {
 
 }

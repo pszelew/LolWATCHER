@@ -2,7 +2,7 @@
 #define EVENTS_WINDOW_H
 
 #include <QDialog>
-
+#include <QDebug>
 namespace Ui {
 class Events_window;
 }
@@ -14,9 +14,9 @@ class Events_window : public QDialog
 public:
     explicit Events_window(QWidget *parent = nullptr);
     ~Events_window();
-
 private:
     Ui::Events_window *ui;
+
 };
 
 #endif // EVENTS_WINDOW_H
