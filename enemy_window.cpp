@@ -13,11 +13,11 @@ Enemy_window::Enemy_window(QWidget *parent) :
     //ustawienie obrazkow na domyslne - czarne
     pix_enemies = new QPixmap[5];
     for(int i = 0;i <5;i++)
-        pix_enemies[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/black.jpg");
+        pix_enemies[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/black.jpg");
     for(int i = 0;i <35;i++)
-        pix_items[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/black.jpg");
+        pix_items[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/black.jpg");
     for(int i = 0;i <10;i++)
-        pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/black.jpg");
+        pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/black.jpg");
     //talica przechowujaca uchwyty do kolejnych obrazkow
     label_items = new QLabel*[35];
     label_spells = new QLabel *[10];
@@ -192,7 +192,7 @@ void Enemy_window::receive_data(Enemy* heros)
     //ustawienie grafik przeciwnikow
     for(int i=0;i<5;++i)
     {
-       pix_enemies[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/"+ heros[i].get_hero_name() +"_"+QString::number(heros[i].get_skin_id())+".jpg");
+       pix_enemies[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/"+ heros[i].get_hero_name() +"_"+QString::number(heros[i].get_skin_id())+".jpg");
     }
 
     ui->label_pic_1->setPixmap(pix_enemies[0].scaled(ui->label_pic_1->width(),ui->label_pic_1->height(), Qt::KeepAspectRatio));
@@ -211,7 +211,7 @@ void Enemy_window::receive_data(Enemy* heros)
    //ustawienie przedmiotów przeciwników
    for(int i=0; i<35;i++)
     {
-        pix_items[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(heros[i/7].get_items().at(i%7).toObject().value("itemID").toDouble()) +".png");
+        pix_items[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/item/"+ QString::number(heros[i/7].get_items().at(i%7).toObject().value("itemID").toDouble()) +".png");
         label_items[i]->setPixmap(pix_items[i].scaled(label_items[i]->width(),label_items[i]->height(), Qt::KeepAspectRatio));
     }
 
@@ -221,25 +221,25 @@ void Enemy_window::receive_data(Enemy* heros)
     {
         QString temp = heros[i/2].get_spells().value(heros[i/2].get_spells().keys().at(i%2)).toObject().value("displayName").toString();
         if(temp=="Duch")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerHaste.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerHaste.png");
         else if(temp == "Uzdrowienie")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerHeal.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerHeal.png");
         else if(temp == "Oczyszczenie")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerBoost.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerBoost.png");
         else if(temp == "Teleportacja")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerTeleport.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerTeleport.png");
         else if(temp == "Porażenie")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerSmite.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerSmite.png");
         else if(temp == "Bariera")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerBarrier.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerBarrier.png");
         else if(temp == "Podpalenie")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerDot.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerDot.png");
         else if(temp == "Wyczerpanie")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerExhaust.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerExhaust.png");
         else if (temp == "Błysk")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerFlash.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerFlash.png");
         else if (temp == "Czystość")
-            pix_spells[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/SummonerMana.png");
+            pix_spells[i] = QPixmap(QCoreApplication::applicationDirPath() + "/img/spell/SummonerMana.png");
 
         label_spells[i]->setPixmap(pix_spells[i].scaled(label_spells[i]->width(),label_spells[i]->height(), Qt::KeepAspectRatio));
     }

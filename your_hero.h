@@ -27,6 +27,7 @@ public:
     void set_summoner_name(QString object){summoner_name = object;}
     void set_hero_name(QString name){hero_name = name;}
     void set_hero_lore(QString name){lore = name;}
+    void set_hero_team(QString name){team = name;}
 
     void set_skin_id(double name){skin_id = name;}
     void set_current_gold(double object){current_gold = object;}
@@ -37,8 +38,6 @@ public:
 
     void append_attack_series(double x, double y) {attack_series->append(x,y);}
     void append_gold_series(double x, double y)  {gold_series->append(x,y);}
-
-
 
     QJsonObject get_active_player_Passive() const {return active_player_Passive;}
     QJsonObject get_active_player_Q() const {return active_player_Q;}
@@ -53,6 +52,8 @@ public:
     QString get_summoner_name() const {return summoner_name;}
     QString get_hero_name() const {return hero_name;}
     QString get_hero_lore() const {return lore;}
+    QString get_hero_team() const {return team;}
+
 
     QLineSeries* get_attack_series() const{return attack_series;}
     QLineSeries* get_gold_series() const {return gold_series;}
@@ -69,6 +70,7 @@ private:
     QString hero_name;
     QString lore;
     QString summoner_name;
+    QString team;
 
     double skin_id;
     double game_time;
@@ -77,7 +79,7 @@ private:
     int level;
     int id;
 
-     QJsonObject hero_data;
+    QJsonObject hero_data;
     QJsonObject active_player_Passive;
     QJsonObject active_player_Q;
     QJsonObject active_player_W;
@@ -86,6 +88,7 @@ private:
     QJsonObject full_runes;
     QJsonObject stats;
     QJsonArray items;
+
 
     QLineSeries* attack_series;
     QLineSeries* gold_series;

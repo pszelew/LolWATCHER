@@ -10,6 +10,8 @@
 #include <QDateTimeAxis>
 #include <QRandomGenerator>
 #include <QDesktopServices>
+#include <QToolTip>
+
 using namespace QtCharts;
 
 namespace Ui {

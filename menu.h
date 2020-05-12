@@ -29,6 +29,7 @@
 #include <QResizeEvent>
 #include <QStyle>
 #include <QRandomGenerator>
+#include <event.h>
 
 namespace Ui {
 class Menu;
@@ -51,12 +52,14 @@ public:
 
     bool check_if_enemy_changed(QString names[], double skin[]);
     int find_your_id(QJsonObject players[], QString name);
+    int current_event = 0;
 protected:
     virtual void resizeEvent(QResizeEvent *wZdarz);
 protected slots:
 
      void get_settings(QString *ust);
      void update_json();
+     void update_tip();
      void on_results(QNetworkReply *reply);
      void on_resultsapiEn1(QNetworkReply *reply);
      void on_resultsapiEn2(QNetworkReply *reply);
@@ -83,6 +86,7 @@ protected slots:
 signals:
      void update_hero(const Your_hero &data);
      void update_enemies(Enemy* data);
+     void update_events(QList<Event> data);
 private:
     Ui::Menu *ui;
     Hero_window* her;
@@ -93,6 +97,7 @@ private:
     QSharedPointer<QPixmap> pix_background;
     QPixmap* pix_enemies;
     QTimer *timer;
+    QTimer *timerTips;
     QNetworkAccessManager *networkManager_apiEn1;
     QNetworkAccessManager *networkManager_apiEn2;
     QNetworkAccessManager *networkManager_apiEn3;
@@ -108,6 +113,17 @@ private:
     Enemy* enemies;
     int splitter_1_pos;
     int splitter_2_pos;
+
+    int count_towers_b;
+    int count_dragons_b;
+    int count_barons_b;
+    int count_kills_b;
+
+    int count_towers_r;
+    int count_dragons_r;
+    int count_barons_r;
+    int count_kills_r;
+
     bool to_initialize;
 
     QString url;
@@ -120,7 +136,7 @@ private:
     bool maximized;
 
     QString *settings;
-
+    QList<Event> events;
 
     int hero_width=0;
     int hero_height=0;

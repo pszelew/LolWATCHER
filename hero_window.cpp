@@ -97,12 +97,12 @@ void Hero_window::receive_data(const Your_hero &hero)
     ui->label_name->setText(read_hero_name);
 
 
-    pix = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/"+ read_hero_name +"_"+QString::number(read_skin_id)+".jpg"));
-    pix_pass = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/passive/"+ read_hero_name +"_Passive.png"));
-    pix_q = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/"+ read_hero_name +"Q.png"));
-    pix_w = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/"+ read_hero_name +"W.png"));
-    pix_e = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/"+ read_hero_name +"E.png"));
-    pix_r = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/spell/"+ read_hero_name +"R.png"));
+    pix = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/"+ read_hero_name +"_"+QString::number(read_skin_id)+".jpg"));
+    pix_pass = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() +"/img/passive/"+ read_hero_name +"_Passive.png"));
+    pix_q = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath()+"/img/spell/"+ read_hero_name +"Q.png"));
+    pix_w = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath()+"/img/spell/"+ read_hero_name +"W.png"));
+    pix_e = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath()+"/img/spell/"+ read_hero_name +"E.png"));
+    pix_r = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath()+"/img/spell/"+ read_hero_name +"R.png"));
 
     ui->label_pic->setPixmap(pix->scaled(ui->label_pic->width(),ui->label_pic->height(), Qt::KeepAspectRatio));
 
@@ -122,31 +122,31 @@ void Hero_window::receive_data(const Your_hero &hero)
     gold_axisX->setRange(0, hero.get_game_time());
 
     //wczytanie danych o przedmiotach
-    pix_it6 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(6).toObject().value("itemID").toDouble()) +".png"));
+    pix_it6 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/item/"+ QString::number(hero.get_items().at(6).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item6->setPixmap(pix_it6->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item6->setText(hero.get_items().at(6).toObject().value("displayName").toString());
 
-    pix_it5 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(5).toObject().value("itemID").toDouble()) +".png"));
+    pix_it5 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() +"/img/item/"+ QString::number(hero.get_items().at(5).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item5->setPixmap(pix_it5->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item5->setText(hero.get_items().at(5).toObject().value("displayName").toString());
 
-    pix_it4 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(4).toObject().value("itemID").toDouble()) +".png"));
+    pix_it4 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/item/"+ QString::number(hero.get_items().at(4).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item4->setPixmap(pix_it4->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item4->setText(hero.get_items().at(4).toObject().value("displayName").toString());
 
-    pix_it3 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(3).toObject().value("itemID").toDouble()) +".png"));
+    pix_it3 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/item/"+ QString::number(hero.get_items().at(3).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item3->setPixmap(pix_it3->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item3->setText(hero.get_items().at(3).toObject().value("displayName").toString());
 
-    pix_it2 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(2).toObject().value("itemID").toDouble()) +".png"));
+    pix_it2 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() +"/img/item/"+ QString::number(hero.get_items().at(2).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item2->setPixmap(pix_it2->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item2->setText(hero.get_items().at(2).toObject().value("displayName").toString());
 
-    pix_it1 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(1).toObject().value("itemID").toDouble()) +".png"));
+    pix_it1 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() +"/img/item/"+ QString::number(hero.get_items().at(1).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item1->setPixmap(pix_it1->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item1->setText(hero.get_items().at(1).toObject().value("displayName").toString());
 
-    pix_it0 = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/item/"+ QString::number(hero.get_items().at(0).toObject().value("itemID").toDouble()) +".png"));
+    pix_it0 = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/item/"+ QString::number(hero.get_items().at(0).toObject().value("itemID").toDouble()) +".png"));
     ui->label_pic_item0->setPixmap(pix_it0->scaled(50,50, Qt::KeepAspectRatio));
     ui->label_item0->setText(hero.get_items().at(0).toObject().value("displayName").toString());
 

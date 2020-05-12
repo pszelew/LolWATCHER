@@ -8,7 +8,6 @@
     <qresource prefix="/sounds">
         <file>sounds/theme.mp3</file>
     </qresource>
-    <qresource prefix="/data"/>
     <qresource prefix="/data/champion">
         <file>data/champion/Aatrox.json</file>
         <file>data/champion/Ahri.json</file>

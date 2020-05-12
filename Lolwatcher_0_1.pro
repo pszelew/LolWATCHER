@@ -21,6 +21,7 @@ SOURCES += \
     author.cpp \
     enemy.cpp \
     enemy_window.cpp \
+    event.cpp \
     events_window.cpp \
     hero_window.cpp \
     main.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     author.h \
     enemy.h \
     enemy_window.h \
+    event.h \
     events_window.h \
     hero_window.h \
     menu.h \

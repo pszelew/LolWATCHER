@@ -4,7 +4,7 @@
 
 Menu::Menu(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Menu), to_initialize(true)
+    ui(new Ui::Menu), to_initialize(true), count_towers_b(0), count_dragons_b(0), count_barons_b(0), count_towers_r(0), count_dragons_r(0), count_barons_r(0), count_kills_r(0), count_kills_b(0)
 {
     ui->setupUi(this);
     //inicjacja tla
@@ -79,6 +79,8 @@ Menu::Menu(QWidget *parent) :
     ui->label_your_hero_pic->setStyleSheet(frame);
     ui->label_tip_current->setStyleSheet(frame_back);
 
+    ui->label_kills_1->setStyleSheet(table_1);
+    ui->label_kills_1_ans->setStyleSheet(table_1);
     ui->label_towers_1->setStyleSheet(table_1);
     ui->label_towers_1_ans->setStyleSheet(table_1);
     ui->label_dragons_1->setStyleSheet(table_1);
@@ -86,6 +88,9 @@ Menu::Menu(QWidget *parent) :
     ui->label_barons_1->setStyleSheet(table_1);
     ui->label_barons_1_ans->setStyleSheet(table_1);
 
+
+    ui->label_kills_2->setStyleSheet(table_2);
+    ui->label_kills_2_ans->setStyleSheet(table_2);
     ui->label_towers_2->setStyleSheet(table_2);
     ui->label_towers_2_ans->setStyleSheet(table_2);
     ui->label_dragons_2->setStyleSheet(table_2);
@@ -133,7 +138,7 @@ Menu::Menu(QWidget *parent) :
     ui->label_enemy_5_name->setGraphicsEffect(effect_e_5);
 
     //ustawiewnie obrazka your_hero
-    pix = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/black.jpg"));
+    pix = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath()+"/img/tiles/black.jpg"));
 
     set_hero_width(0.25*x);
     set_hero_height(0.25*y);
@@ -144,7 +149,7 @@ Menu::Menu(QWidget *parent) :
     //ustawienie obrazkow enemies
     pix_enemies = new QPixmap[5];
     for(int i = 0;i <5;i++)
-        pix_enemies[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/black.jpg");
+        pix_enemies[i] = QPixmap(QCoreApplication::applicationDirPath()+"/img/tiles/black.jpg");
 }
 
 Menu::~Menu()
@@ -275,6 +280,12 @@ void Menu::on_results(QNetworkReply *reply)
             //jesli nastapila zmiana bohatera/skinu naszego bohatera
             if(read_hero_name!=your_hero->get_hero_name()||read_skin_id!=your_hero->get_skin_id())
             {
+                qDebug() << "Czyszcze liste eventow";
+                events.clear();
+                current_event = 0;
+                //odczytanie druzyny w ktorej gramy
+                your_hero->set_hero_team(players[your_id].value("team").toString());
+
                 //ustawienie danych dla konkretnego bohatera
                 your_hero->set_hero_name(read_hero_name);
                 your_hero->set_skin_id(read_skin_id);
@@ -297,7 +308,7 @@ void Menu::on_results(QNetworkReply *reply)
                 ui->label_your_hero_name->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">"+ read_hero_name +"</p><p align=\"center\"><span style=\" color:#ffffff;\">"+title+"</p></body></html>");
 
                 //ustawienie grafiki pod obrazem
-                pix = QSharedPointer<QPixmap>(new QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/"+ read_hero_name +"_"+QString::number(read_skin_id)+".jpg"));
+                pix = QSharedPointer<QPixmap>(new QPixmap(QCoreApplication::applicationDirPath() + "/img/tiles/"+ read_hero_name +"_"+QString::number(read_skin_id)+".jpg"));
                 ui->label_your_hero_pic->setPixmap(pix->scaled(get_hero_width(),get_hero_height(), Qt::KeepAspectRatio));
                 //wczytanie opisu bohatera
                 read_hero_lore = root_hero_data.value("lore").toString();
@@ -308,6 +319,7 @@ void Menu::on_results(QNetworkReply *reply)
             QString read_enemies_names[5];
             double read_enemies_skins[5];
 
+            count_kills_b = 0;
             if(your_id<5)
             {
                 for(int i = 0; i<5;++i)
@@ -315,6 +327,10 @@ void Menu::on_results(QNetworkReply *reply)
                     read_enemies_names[i] =  players[i+5].value("championName").toString().replace(" ","").replace("'", "");
                     read_enemies_skins[i] =  players[i+5].value("skinID").toDouble();
                     enemies[i].set_id(i+5);                    
+                }
+                for(int i = 0; i<5;++i)
+                {
+                    count_kills_b += players[i].value("scores").toObject().value("kills").toDouble();
                 }
             }
             else
@@ -325,6 +341,10 @@ void Menu::on_results(QNetworkReply *reply)
                     read_enemies_skins[i] =  players[i].value("skinID").toDouble();
                     enemies[i].set_id(i);
                 }
+                for(int i = 0; i<5;++i)
+                {
+                    count_kills_b += players[i+5].value("scores").toObject().value("kills").toDouble();
+                }
             }
 
             //wczytanie KDA kazdego z przeciwknikow
@@ -334,13 +354,15 @@ void Menu::on_results(QNetworkReply *reply)
             double read_enemy_cs[5];
             QString read_enemy_kda[5];
 
+            count_kills_r = 0;
             for (int i =0 ;i<5;++i)
             {
                 read_enemy_kills[i] = players[enemies[i].get_id()].value("scores").toObject().value("kills").toDouble();
                 read_enemy_deaths[i] = players[enemies[i].get_id()].value("scores").toObject().value("deaths").toDouble();
                 read_enemy_assists[i] = players[enemies[i].get_id()].value("scores").toObject().value("assists").toDouble();
                 read_enemy_cs[i] = players[enemies[i].get_id()].value("scores").toObject().value("creepScore").toDouble();
-                read_enemy_kda[i] = QString::number(read_enemy_kills[0]) +"/"+ QString::number(read_enemy_deaths[0]) +"/"+ QString::number(read_enemy_assists[0]);
+                read_enemy_kda[i] = QString::number(read_enemy_kills[i]) +"/"+ QString::number(read_enemy_deaths[i]) +"/"+ QString::number(read_enemy_assists[i]);
+                count_kills_r += read_enemy_kills[i];
             }
 
             //wczytanie przedmiotow przeciwnikow
@@ -349,21 +371,24 @@ void Menu::on_results(QNetworkReply *reply)
                 enemies[i].set_items(players[enemies[i].get_id()].value("items").toArray());
             }
 
-            //wczytanie czarow przywolywacza przeciwnikow
-            for (int i =0 ;i<5;++i)
-            {
-                enemies[i].set_spells(players[enemies[i].get_id()].value("summonerSpells").toObject());
-            }
-
-            //wczytanie czarow przywolywacza przeciwnikow
-            for (int i =0 ;i<5;++i)
-            {
-                enemies[i].set_summoner_name(players[enemies[i].get_id()].value("summonerName").toString());
-            }
-
             //jesli zmienil sie choc jeden przeciwnik, to zaktualizujmy przeciwnikow
             if(check_if_enemy_changed(read_enemies_names, read_enemies_skins))
             {
+                qDebug() << "Czyszcze liste eventow";
+                events.clear();
+
+                //wczytanie czarow przywolywacza przeciwnikow
+                for (int i =0 ;i<5;++i)
+                {
+                    enemies[i].set_spells(players[enemies[i].get_id()].value("summonerSpells").toObject());
+                }
+
+                //wczytanie nazw przywolywaczy
+                for (int i =0 ;i<5;++i)
+                {
+                    enemies[i].set_summoner_name(players[enemies[i].get_id()].value("summonerName").toString());
+                }
+
                 //ustawienie nazw postaci w klasie
                 for (int i =0;i<5;i++)
                 {
@@ -392,7 +417,7 @@ void Menu::on_results(QNetworkReply *reply)
                //ustawienie ich miniatur
                for(int i=0;i<5;++i)
                {
-                  pix_enemies[i] = QPixmap("/home/patyk/QT_tutorial/Lolwatcher_0_1/img/tiles/"+ read_enemies_names[i] +"_"+QString::number(read_enemies_skins[i])+".jpg");
+                  pix_enemies[i] = QPixmap(QCoreApplication::applicationDirPath() +"/img/tiles/"+ read_enemies_names[i] +"_"+QString::number(read_enemies_skins[i])+".jpg");
                }
 
                ui->label_enemy_1_pic->setPixmap(pix_enemies[0].scaled(ui->label_enemy_1_pic->width(),ui->label_enemy_1_pic->height(), Qt::KeepAspectRatio));
@@ -411,6 +436,110 @@ void Menu::on_results(QNetworkReply *reply)
             ui->label_enemy_4_name->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">"+read_enemies_names[3]+"</span></p><p align=\"center\"><span style=\" color:#ffffff;\">"+read_enemy_kda[3]+" "+ QString::number(read_enemy_cs[3])+"</span></p></body></html>");
             ui->label_enemy_5_name->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">"+read_enemies_names[4]+"</span></p><p align=\"center\"><span style=\" color:#ffffff;\">"+read_enemy_kda[4]+" "+ QString::number(read_enemy_cs[4])+"</span></p></body></html>");
 
+            //wczytanie wydarzen
+            QJsonArray tempArr = root.value(root.keys().at(2)).toObject().value("Events").toArray();
+            for(int i=current_event; i<tempArr.size(); ++i)
+            {
+                double Time = tempArr.at(i).toObject().value("EventTime").toDouble();
+                QString Name = tempArr.at(i).toObject().value("EventName").toString();
+                Event tempEv(i, Time, Name);
+
+                if(Name == "ChampionKill")
+                {
+                    tempEv.set_killerName(tempArr.at(i).toObject().value("KillerName").toString());
+                }
+                if(Name == "FirstBlood")
+                {
+                    tempEv.set_killerName(tempArr.at(i).toObject().value("Recipient").toString());
+                }
+                if(Name == "FirstBrick")
+                {
+                    tempEv.set_killerName(tempArr.at(i).toObject().value("KillerName").toString());
+                }
+                if(Name == "TurretKilled")
+                {
+                    tempEv.set_killerName(tempArr.at(i).toObject().value("KillerName").toString());
+                    if(tempArr.at(i).toObject().value("TurretKilled").toString().indexOf("T1",0))
+                    {
+                        if(your_hero->get_hero_team() == "ORDER")
+                        {
+                            tempEv.set_KilledTeam(2);
+                            ++count_towers_r;
+                        }
+                        else
+                        {
+                            tempEv.set_KilledTeam(1);
+                            ++count_towers_b;
+                        }
+                    }
+                    else
+                    {
+                        if(your_hero->get_hero_team() == "ORDER")
+                        {
+                            tempEv.set_KilledTeam(1);
+                            ++count_towers_b;
+                        }
+                        else
+                        {
+                            tempEv.set_KilledTeam(2);
+                            ++count_towers_r;
+                        }
+                    }
+                }
+                if(Name == "BaronKill"||Name == "DragonKill")
+                {
+                    int temp = 0;
+                    for(int j=0; j<5;++j)
+                    {
+                        if(enemies[j].get_summoner_name() == tempArr.at(i).toObject().value("KillerName").toString())
+                        {
+                            temp = 2;
+                            tempEv.set_KilledTeam(2);
+                            if(Name == "BaronKill")
+                                ++count_barons_r;
+                            else
+                                ++count_dragons_r;
+                        }
+                    }
+                    if(temp==0)
+                    {
+                        tempEv.set_KilledTeam(1);
+                        if(Name == "BaronKill")
+                            ++count_barons_b;
+                        else
+                            ++count_dragons_b;
+                    }
+                }
+                events.append(tempEv);
+            }
+
+            current_event = tempArr.size();
+            //zaktualizowanie cyferek na tablicy wydarzen
+            ui->label_kills_1_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_kills_b) + "</span></p></body></html>");
+            ui->label_kills_2_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_kills_r) + "</span></p></body></html>");
+            ui->label_towers_1_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_towers_b) + "</span></p></body></html>");
+            ui->label_towers_2_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_towers_r) + "</span></p></body></html>");
+            ui->label_dragons_1_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_dragons_b) + "</span></p></body></html>");
+            ui->label_dragons_2_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_dragons_r) + "</span></p></body></html>");
+            ui->label_barons_1_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_barons_b) + "</span></p></body></html>");
+            ui->label_barons_2_ans->setText("<html><head/><body><p><span style=\" color:#ffffff;\">" + QString::number(count_barons_r) + "</span></p></body></html>");
+
+            //zaktualizowanie ostatniego wydarzenia
+            QString name_val = events.last().get_eventName();
+            if(name_val == "GameStart")
+                name_val = "Początek gry";
+            else if(name_val == "MinionsSpawning")
+                name_val = "Pojawienie się stworów";
+            else if(name_val == "ChampionKill")
+                name_val = (events.last().get_killerName()+ " pokonał przeciwnika");
+            else if(name_val == "FirstBlood")
+                name_val = ("Gracz " + events.last().get_killerName() +" przelewa pierwszą krew. Gratulacje!");
+            else if(name_val == "FirstBrick")
+                name_val = (events.last().get_killerName()+" zniszczył pierwszą wieżę. Gratulacje!");
+            else if(name_val == "TurretKilled")
+                name_val = (events.last().get_killerName()+" zniszczył wieżę");
+            ui->label_last_event->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">" + name_val + "</span></p></body></html>");
+
             //zaktualizowanie czasu ostatniej aktualizacji stanu bohatera
             QJsonObject gameData = root.value(root.keys().at(3)).toObject();
 
@@ -418,22 +547,18 @@ void Menu::on_results(QNetworkReply *reply)
             your_hero->set_game_time(gameData.value("gameTime").toDouble());
 
             //dodanie pamieci ataku
-
-            //your_hero->append_attack_series(QRandomGenerator::global()->bounded(500) - 2.5,QRandomGenerator::global()->bounded(500) - 2.5);
-            //your_hero->append_gold_series(QRandomGenerator::global()->bounded(500) - 2.5,QRandomGenerator::global()->bounded(500) - 2.5);
-
             your_hero->append_attack_series(your_hero->get_game_time(),your_hero->get_stats().value("attackDamage").toDouble());
             your_hero->append_gold_series(your_hero->get_game_time(),your_hero->get_current_gold());
 
             //wyemitowanie sygnalu o aktualnym bohaterze do dalszego okna programu
-
             emit update_hero(*your_hero);
             emit update_enemies(enemies);
+            emit update_events(events);
         }
         else
           qDebug() << "Niepowodzenie odczytu pliku json\n";
-     }
-     else
+    }
+    else
         qDebug() << "Nie nawiazano polaczenia z serwerem\n";
 }
 
@@ -700,6 +825,9 @@ void Menu::on_button_enemies_clicked()
 void Menu::on_button_events_clicked()
 {
     eve = new Events_window(this);
+    connect(this, SIGNAL(update_events(QList<Event>)), eve, SLOT(receive_data(QList<Event>)));
+    connect(eve, SIGNAL(finished(int)), this, SLOT(onEventsWindowClosed(int)));
+    emit update_events(events);
     eve->setModal(true);
     eve->show();
 }
@@ -707,6 +835,7 @@ void Menu::on_button_events_clicked()
 void Menu::on_button_tips_clicked()
 {
     tip = new Tips_window(this);
+    connect(tip, SIGNAL(finished(int)), this, SLOT(onTipsWindowClosed(int)));
     tip->setModal(true);
     tip->show();
 }
@@ -733,6 +862,7 @@ void Menu::onTipsWindowClosed(int results)
     delete tip;
 }
 
+
 void Menu::get_settings(QString* ust)
 {
     settings = new QString[8];
@@ -756,9 +886,13 @@ void Menu::get_settings(QString* ust)
 
     //polaczenie timera ze slotem pobierajacym dane z sieci
      timer = new QTimer(this);
+     timerTips = new QTimer(this);
      timer->start(update_freq);
+     timerTips->start(5000);
      connect(timer, SIGNAL(timeout()), this, SLOT(update_json()));
+     connect(timerTips, SIGNAL(timeout()), this, SLOT(update_tip()));
      update_json();
+     update_tip();
 
      this->resize(settings[4].toInt(), settings[5].toInt());
 
@@ -767,6 +901,32 @@ void Menu::get_settings(QString* ust)
          this->showMaximized();
          to_initialize = false;
      }
-
 }
 
+void Menu::update_tip()
+{
+    int lenght;
+    int rand;
+    QRandomGenerator generator = QRandomGenerator::securelySeeded();
+    QString temp;
+    QFile tipsGame(QCoreApplication::applicationDirPath() + "/data/tipsGame.txt");
+    if (!tipsGame.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Nie udalo sie utworzyc pliku z podpowiedziami: data.conf";
+        return;
+    }
+    QTextStream in(&tipsGame);
+    lenght = in.readLine().toInt();
+    rand = generator.bounded(0, lenght);
+    for(int i=0; i<lenght;++i)
+    {
+        in.readLine();
+        temp = in.readLine();
+        if(i == rand)
+            break;
+    }
+
+    ui->label_tip_current->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">" + temp + "</span></p></body></html>");
+
+
+}

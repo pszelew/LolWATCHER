@@ -12,7 +12,7 @@ Start::Start(QWidget *parent)
     ui->setupUi(this);
     //napis "wersja"
     QString ver = "ver 0.3, 06/05/2020";
-    QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
+    QFile data_conf(QCoreApplication::applicationDirPath() + "/data/data.conf");
     if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qDebug() << "Nie udalo sie utworzyc pliku z ustawieniami: data.conf";
@@ -86,13 +86,13 @@ Start::Start(QWidget *parent)
     player = new QMediaPlayer;
     playlist = new QMediaPlaylist;
 
-    playlist->addMedia(QUrl::fromLocalFile("/home/patyk/QT_tutorial/Lolwatcher_0_1/sounds/theme.mp3"));
+    playlist->addMedia(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/sounds/theme.mp3"));
     playlist->setCurrentIndex(1);
     playlist->setPlaybackMode(QMediaPlaylist::Loop);
     player->setPlaylist(playlist);
 
 
-    player->setVolume(10);
+    player->setVolume(20);
     player->play();
 
     //ustawienie logo
@@ -178,7 +178,8 @@ void Start::update_window(int result)
     if(result == 42) //tylko gdy przycisnieto przycisk zatwierdz
     {
         //update data
-        QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
+
+        QFile data_conf(QCoreApplication::applicationDirPath() + "/data/data.conf");
 
         if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
         {
