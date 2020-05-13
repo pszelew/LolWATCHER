@@ -39,7 +39,7 @@ void Ustawienia::on_button_apply_clicked()
     else
         check = "false";
 
-    QFile data_conf("/home/patyk/QT_tutorial/Lolwatcher_0_1/data.conf");
+    QFile data_conf(QCoreApplication::applicationDirPath() + "/data/data.conf");
 
     if (!data_conf.open(QIODevice::WriteOnly | QIODevice::Text))
     {

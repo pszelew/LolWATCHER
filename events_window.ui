@@ -455,6 +455,10 @@
   <property name="windowTitle">
    <string>Wydarzenia</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="background.qrc">
+    <normaloff>:/images/img/logo.png</normaloff>:/images/img/logo.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label">
@@ -482,6 +486,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="background.qrc"/>
+ </resources>
  <connections/>
 </ui>

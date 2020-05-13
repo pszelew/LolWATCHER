@@ -4,6 +4,7 @@
         <file>img/lucian.gif</file>
         <file>img/QtIcon.png</file>
         <file>img/Teemo_4.jpg</file>
+        <file>img/logo.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>sounds/theme.mp3</file>

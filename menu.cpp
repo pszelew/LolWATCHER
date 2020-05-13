@@ -4,9 +4,10 @@
 
 Menu::Menu(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Menu), to_initialize(true), count_towers_b(0), count_dragons_b(0), count_barons_b(0), count_towers_r(0), count_dragons_r(0), count_barons_r(0), count_kills_r(0), count_kills_b(0)
+    ui(new Ui::Menu), count_towers_b(0), count_dragons_b(0), count_barons_b(0), count_kills_b(0), count_towers_r(0), count_dragons_r(0), count_barons_r(0), count_kills_r(0), to_initialize(true), hero_width(0), hero_height(0), current_event(0)
 {
     ui->setupUi(this);
+
     //inicjacja tla
     pix_background = QSharedPointer<QPixmap>(new QPixmap(":/images/img/Teemo_4.jpg"));
 
@@ -159,11 +160,7 @@ Menu::~Menu()
 
 void Menu::resizeEvent(QResizeEvent *wZdarz)
 {
-    int w = ui->label_your_hero_pic->width();
-    int h = ui->label_your_hero_pic->height();
-    int x = this->width();
-    int y = this->height();
-
+    (void)wZdarz;
     QPalette palette;
     palette.setBrush(QPalette::Background, pix_background->scaled(this->size(), Qt::IgnoreAspectRatio));
     this->setPalette(palette);
@@ -214,7 +211,6 @@ void Menu::resizeEvent(QResizeEvent *wZdarz)
 void Menu::update_json()
 {
      networkManager->get(QNetworkRequest(QUrl("http://"+url+":"+port+"/liveclientdata/allgamedata")));
-     //networkManager_apiEn1->get(QNetworkRequest(QUrl("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/pepit9889?api_key="+api_key)));
      networkManager_apiEn1->get(QNetworkRequest(QUrl("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+enemies[0].get_summoner_name()+"?api_key="+api_key)));
      networkManager_apiEn2->get(QNetworkRequest(QUrl("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+enemies[1].get_summoner_name()+"?api_key="+api_key)));
      networkManager_apiEn3->get(QNetworkRequest(QUrl("https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/"+enemies[2].get_summoner_name()+"?api_key="+api_key)));
@@ -282,6 +278,7 @@ void Menu::on_results(QNetworkReply *reply)
             {
                 qDebug() << "Czyszcze liste eventow";
                 events.clear();
+                emit reset_game();
                 current_event = 0;
                 //odczytanie druzyny w ktorej gramy
                 your_hero->set_hero_team(players[your_id].value("team").toString());
@@ -313,6 +310,7 @@ void Menu::on_results(QNetworkReply *reply)
                 //wczytanie opisu bohatera
                 read_hero_lore = root_hero_data.value("lore").toString();
                 your_hero->set_hero_lore(read_hero_lore);
+                update_tip();
             }
 
             //wczytanie nazw i skinow przeciwnikow
@@ -376,6 +374,7 @@ void Menu::on_results(QNetworkReply *reply)
             {
                 qDebug() << "Czyszcze liste eventow";
                 events.clear();
+                emit reset_game();
 
                 //wczytanie czarow przywolywacza przeciwnikow
                 for (int i =0 ;i<5;++i)
@@ -425,6 +424,7 @@ void Menu::on_results(QNetworkReply *reply)
                ui->label_enemy_3_pic->setPixmap(pix_enemies[2].scaled(ui->label_enemy_3_pic->width(),ui->label_enemy_3_pic->height(), Qt::KeepAspectRatio));
                ui->label_enemy_4_pic->setPixmap(pix_enemies[3].scaled(ui->label_enemy_4_pic->width(),ui->label_enemy_4_pic->height(), Qt::KeepAspectRatio));
                ui->label_enemy_5_pic->setPixmap(pix_enemies[4].scaled(ui->label_enemy_5_pic->width(),ui->label_enemy_5_pic->height(), Qt::KeepAspectRatio));
+               update_tip();
             }
 
 
@@ -549,11 +549,16 @@ void Menu::on_results(QNetworkReply *reply)
             //dodanie pamieci ataku
             your_hero->append_attack_series(your_hero->get_game_time(),your_hero->get_stats().value("attackDamage").toDouble());
             your_hero->append_gold_series(your_hero->get_game_time(),your_hero->get_current_gold());
+            //aktualizacja danych w strukturze
+            tips_message.enemies = enemies;
+            tips_message.your_hero = *your_hero;
+
 
             //wyemitowanie sygnalu o aktualnym bohaterze do dalszego okna programu
             emit update_hero(*your_hero);
             emit update_enemies(enemies);
             emit update_events(events);
+            emit update_tips(tips_message);
         }
         else
           qDebug() << "Niepowodzenie odczytu pliku json\n";
@@ -755,7 +760,7 @@ int Menu::find_your_id(QJsonObject players[], QString name)
 
 void Menu::on_splitter_splitterMoved(int pos, int index)
 {
-
+    (void)index;
     QList<int> test = ui->splitter->sizes();
 
     //jesli sie rozszerza
@@ -825,6 +830,7 @@ void Menu::on_button_enemies_clicked()
 void Menu::on_button_events_clicked()
 {
     eve = new Events_window(this);
+    connect(this, SIGNAL(reset_game()), eve, SLOT(reset_game()));
     connect(this, SIGNAL(update_events(QList<Event>)), eve, SLOT(receive_data(QList<Event>)));
     connect(eve, SIGNAL(finished(int)), this, SLOT(onEventsWindowClosed(int)));
     emit update_events(events);
@@ -835,7 +841,9 @@ void Menu::on_button_events_clicked()
 void Menu::on_button_tips_clicked()
 {
     tip = new Tips_window(this);
+    connect(this, SIGNAL(update_tips(Tips_message)), tip, SLOT(receive_data(Tips_message)));
     connect(tip, SIGNAL(finished(int)), this, SLOT(onTipsWindowClosed(int)));
+    emit update_tips(tips_message);
     tip->setModal(true);
     tip->show();
 }
@@ -844,21 +852,25 @@ void Menu::on_button_tips_clicked()
 //usuniecie okna z pamieci po jego zamknieciu
 void Menu::onHeroWindowClosed(int results)
 {
+    (void)results;
     delete her;
 }
 
 void Menu::onEnemyWindowClosed(int results)
 {
+    (void)results;
     delete enem;
 }
 
 void Menu::onEventsWindowClosed(int results)
 {
+    (void)results;
     delete eve;
 }
 
 void Menu::onTipsWindowClosed(int results)
 {
+    (void)results;
     delete tip;
 }
 
@@ -888,11 +900,10 @@ void Menu::get_settings(QString* ust)
      timer = new QTimer(this);
      timerTips = new QTimer(this);
      timer->start(update_freq);
-     timerTips->start(5000);
+     timerTips->start(10000);
      connect(timer, SIGNAL(timeout()), this, SLOT(update_json()));
      connect(timerTips, SIGNAL(timeout()), this, SLOT(update_tip()));
      update_json();
-     update_tip();
 
      this->resize(settings[4].toInt(), settings[5].toInt());
 
@@ -906,24 +917,74 @@ void Menu::get_settings(QString* ust)
 void Menu::update_tip()
 {
     int lenght;
-    int rand;
-    QRandomGenerator generator = QRandomGenerator::securelySeeded();
+    int rand_number;
+    int rand_category;
+
     QString temp;
-    QFile tipsGame(QCoreApplication::applicationDirPath() + "/data/tipsGame.txt");
-    if (!tipsGame.open(QIODevice::ReadOnly | QIODevice::Text))
+    QRandomGenerator generator = QRandomGenerator::securelySeeded();
+    rand_category = generator.bounded(0,4);
+
+    //podpowiedzi na temat samej rozgrywki
+    if(rand_category == 0)
     {
-        qDebug() << "Nie udalo sie utworzyc pliku z podpowiedziami: data.conf";
-        return;
+        QFile tipsGame(QCoreApplication::applicationDirPath() + "/data/tips/tipsGame.txt");
+        if (!tipsGame.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            qDebug() << "Nie udalo sie utworzyc pliku z podpowiedziami: data.conf";
+            return;
+        }
+
+        QTextStream in(&tipsGame);
+        lenght = in.readLine().toInt();
+        rand_number = generator.bounded(0, lenght);
+        for(int i=0; i<lenght;++i)
+        {
+            in.readLine();
+            temp = in.readLine();
+            if(i == rand_number)
+                break;
+        }
     }
-    QTextStream in(&tipsGame);
-    lenght = in.readLine().toInt();
-    rand = generator.bounded(0, lenght);
-    for(int i=0; i<lenght;++i)
+    //ciekawostki
+    else if(rand_category == 1)
     {
-        in.readLine();
-        temp = in.readLine();
-        if(i == rand)
-            break;
+        QFile tipsGame(QCoreApplication::applicationDirPath() + "/data/tips/tipsFunFacts.txt");
+        if (!tipsGame.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            qDebug() << "Nie udalo sie utworzyc pliku z podpowiedziami: data.conf";
+            return;
+        }
+        QTextStream in(&tipsGame);
+        lenght = in.readLine().toInt();
+        rand_number = generator.bounded(0, lenght);
+        for(int i=0; i<lenght;++i)
+        {
+            in.readLine();
+            temp = in.readLine();
+            if(i == rand_number)
+                break;
+        }
+    }
+    //nasz bohater
+    else if(rand_category == 2)
+    {
+        QJsonArray tips = your_hero->get_hero_data().value("allytips").toArray();
+        if(tips.size()>0)
+        {
+            rand_number = generator.bounded(0, tips.size());
+            temp = your_hero->get_hero_name() + ": "+ tips.at(rand_number).toString();
+        }
+    }
+
+    else if(rand_category == 3)
+    {
+        int temp_rand = generator.bounded(0, 5);
+        QJsonArray tips = enemies[temp_rand].get_hero_data().value("allytips").toArray();
+        if(tips.size()>0)
+        {
+            rand_number = generator.bounded(0, tips.size());
+            temp = enemies[temp_rand].get_hero_name() + ": "+ tips.at(rand_number).toString();
+        }
     }
 
     ui->label_tip_current->setText("<html><head/><body><p align=\"center\"><span style=\" color:#ffffff;\">" + temp + "</span></p></body></html>");

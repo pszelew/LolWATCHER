@@ -45,6 +45,7 @@ Author::~Author()
 
 void Author::resizeEvent(QResizeEvent *wZdarz)
 {
+    (void)wZdarz;
     int x = this->width();
     int y = this->height();
 
@@ -64,8 +65,9 @@ void Author::resizeEvent(QResizeEvent *wZdarz)
 
 void Author::on_splitter_splitterMoved(int pos, int index)
 {
+    (void)pos, void(index);
     int w = ui->label_pict->width();
     int h = ui->label_pict->height();
-    //ui->label_pict->resize(w,h);
+
     ui->label_pict->setPixmap(pix->scaled(w,h,Qt::KeepAspectRatio));
 }

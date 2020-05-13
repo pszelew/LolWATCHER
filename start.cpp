@@ -11,7 +11,7 @@ Start::Start(QWidget *parent)
 {
     ui->setupUi(this);
     //napis "wersja"
-    QString ver = "ver 0.3, 06/05/2020";
+    QString ver = "ver 1.0, 13/05/2020";
     QFile data_conf(QCoreApplication::applicationDirPath() + "/data/data.conf");
     if (!data_conf.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -95,8 +95,6 @@ Start::Start(QWidget *parent)
     player->setVolume(20);
     player->play();
 
-    //ustawienie logo
-    //pix = QSharedPointer<QPixmap>(new QPixmap(":/images/img/logo.png"));
 }
 
 Start::~Start()
@@ -106,6 +104,7 @@ Start::~Start()
 
 void Start::resizeEvent(QResizeEvent *wZdarz)
 {
+    (void)wZdarz;
     if(to_initialize&&settings[6]=="true")
     {
         this->showMaximized();

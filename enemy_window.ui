@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>732</width>
-    <height>300</height>
+    <height>301</height>
    </rect>
   </property>
   <property name="palette">
@@ -454,6 +454,10 @@
   </property>
   <property name="windowTitle">
    <string>Przeciwnicy</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="background.qrc">
+    <normaloff>:/images/img/logo.png</normaloff>:/images/img/logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="3">
@@ -1966,6 +1970,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="background.qrc"/>
+ </resources>
  <connections/>
 </ui>

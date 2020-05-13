@@ -79,6 +79,7 @@ Enemy_window::~Enemy_window()
 
 void Enemy_window::resizeEvent(QResizeEvent *wZdarz)
 {
+    (void)wZdarz;
     if(ui->label_pic_1->width()<ui->label_pic_1->height())
     {
         ui->label_pic_1->setMaximumHeight(ui->label_pic_1->width());

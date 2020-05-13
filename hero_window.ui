@@ -461,6 +461,10 @@
   <property name="windowTitle">
    <string>Twój bohater</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="background.qrc">
+    <normaloff>:/images/img/logo.png</normaloff>:/images/img/logo.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_23">
    <item>
     <widget class="QSplitter" name="splitter">
@@ -1554,6 +1558,8 @@
    <header>qchartview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="background.qrc"/>
+ </resources>
  <connections/>
 </ui>

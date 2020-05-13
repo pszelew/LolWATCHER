@@ -33,8 +33,6 @@ Hero_window::Hero_window(QWidget *parent) :
     //ustawienia wykresu atak
     ui->attack_view->setRenderHint(QPainter::Antialiasing);
 
-    time_temp = 0;
-
     attack_axisX = new QValueAxis;
     attack_axisY = new QValueAxis;
     attack_chart = new QChart;
@@ -163,10 +161,6 @@ void Hero_window::receive_data(const Your_hero &hero)
     ui->label_gold->setText(QString::number(hero.get_current_gold(), 'f', 0));
     ui->label_gold->setText(QString::number(hero.get_current_gold(), 'f', 0));
     ui->label_lvl->setText(QString::number(hero.get_level(), 'f', 0));
-
-
-
-
 }
 
 void Hero_window::on_pushButton_clicked()

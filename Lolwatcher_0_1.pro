@@ -40,6 +40,7 @@ HEADERS += \
     hero_window.h \
     menu.h \
     start.h \
+    tips_message.h \
     tips_window.h \
     ustawienia.h \
     your_hero.h

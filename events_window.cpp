@@ -3,7 +3,7 @@
 
 Events_window::Events_window(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Events_window), current_event(0), count_towers(0), count_dragons(0), count_barons(0)
+    ui(new Ui::Events_window), current_event(0)
 {
     ui->setupUi(this);
 
